@@ -35,6 +35,9 @@ let ENV_CONFIG: EnvironmentConfig = {
     uv_venv_path: process.env.UV_VENV_PATH
 };
 
+// Runtime environment variables (set dynamically by agent)
+let runtimeEnv: Record<string, string> = {};
+
 if (!CODE_STORAGE_DIR) {
     throw new Error('Missing required environment variable: CODE_STORAGE_DIR');
 }
@@ -120,10 +123,10 @@ async function executeCode(code: string, filePath: string) {
         const pythonCmd = platform() === 'win32' ? `python -u "${filePath}"` : `python3 -u "${filePath}"`;
         const { command, options } = getPlatformSpecificCommand(pythonCmd);
 
-        // Execute code
+        // Execute code with runtime environment variables
         const { stdout, stderr } = await execAsync(command, {
             cwd: CODE_STORAGE_DIR,
-            env: { ...process.env, PYTHONUNBUFFERED: '1' },
+            env: { ...process.env, ...runtimeEnv, PYTHONUNBUFFERED: '1' },
             ...options
         });
 
@@ -165,10 +168,10 @@ async function executeCodeFromFile(filePath: string) {
         const pythonCmd = platform() === 'win32' ? `python -u "${filePath}"` : `python3 -u "${filePath}"`;
         const { command, options } = getPlatformSpecificCommand(pythonCmd);
 
-        // Execute code with unbuffered Python
+        // Execute code with runtime environment variables and unbuffered Python
         const { stdout, stderr } = await execAsync(command, {
             cwd: CODE_STORAGE_DIR,
-            env: { ...process.env, PYTHONUNBUFFERED: '1' },
+            env: { ...process.env, ...runtimeEnv, PYTHONUNBUFFERED: '1' },
             ...options
         });
 
@@ -682,6 +685,28 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     type: "object",
                     properties: {}
                 }
+            },
+            {
+                name: "set_runtime_env",
+                description: "Set runtime environment variables that will be available when executing Python code via execute_code or execute_code_file. These variables persist until the MCP server is restarted.",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        variables: {
+                            type: "object",
+                            description: "Dictionary of environment variables to set (e.g., {\"DATA_PATH\": \"/path/to/data\", \"MODE\": \"production\"})"
+                        }
+                    },
+                    required: ["variables"]
+                }
+            },
+            {
+                name: "get_runtime_env",
+                description: "Get the current runtime environment variables that will be passed to executed Python code",
+                inputSchema: {
+                    type: "object",
+                    properties: {}
+                }
             }
         ]
     };
@@ -723,6 +748,10 @@ interface ConfigureEnvironmentArgs {
     conda_name?: string;
     venv_path?: string;
     uv_venv_path?: string;
+}
+
+interface SetRuntimeEnvArgs {
+    variables?: Record<string, string>;
 }
 
 /**
@@ -969,7 +998,51 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 }]
             };
         }
-        
+
+        case "set_runtime_env": {
+            const args = request.params.arguments as SetRuntimeEnvArgs;
+            if (!args?.variables || typeof args.variables !== 'object') {
+                return {
+                    content: [{
+                        type: "text",
+                        text: JSON.stringify({
+                            status: 'error',
+                            error: "Valid 'variables' object is required"
+                        }),
+                        isError: true
+                    }]
+                };
+            }
+
+            // Update runtime environment variables
+            runtimeEnv = { ...runtimeEnv, ...args.variables };
+
+            return {
+                content: [{
+                    type: "text",
+                    text: JSON.stringify({
+                        status: 'success',
+                        message: 'Runtime environment variables updated',
+                        variables: runtimeEnv
+                    }),
+                    isError: false
+                }]
+            };
+        }
+
+        case "get_runtime_env": {
+            return {
+                content: [{
+                    type: "text",
+                    text: JSON.stringify({
+                        status: 'success',
+                        variables: runtimeEnv
+                    }),
+                    isError: false
+                }]
+            };
+        }
+
         default:
             throw new Error("Unknown tool");
     }
