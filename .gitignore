@@ -1,3 +1,6 @@
 # .gitignore
 node_modules/
 generated_code/
+code_storage/
+venv/
+build/

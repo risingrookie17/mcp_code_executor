@@ -1,59 +1,60 @@
-# MCP Code Executor
-[![smithery badge](https://smithery.ai/badge/@bazinga012/mcp_code_executor)](https://smithery.ai/server/@bazinga012/mcp_code_executor)
+# MCP 代码执行器
 
-The MCP Code Executor is an MCP server that allows LLMs to execute Python code within a specified Python environment. This enables LLMs to run code with access to libraries and dependencies defined in the environment. It also supports incremental code generation for handling large code blocks that may exceed token limits.
+[![smithery badge](https://smithery.ai/badge/@risingrookie17/mcp_code_executor)](https://smithery.ai/server/@risingrookie17/mcp_code_executor)
+
+MCP 代码执行器是一个 MCP 服务器，允许 LLM 在指定的 Python 环境中执行 Python 代码。这使 LLM 能够运行访问环境中定义的库和依赖的代码。它还支持增量代码生成，以处理可能超出 token 限制的大型代码块。
 
 <a href="https://glama.ai/mcp/servers/45ix8xode3"><img width="380" height="200" src="https://glama.ai/mcp/servers/45ix8xode3/badge" alt="Code Executor MCP server" /></a>
 
-## Features
+## 功能特性
 
-- Execute Python code from LLM prompts
-- Support for incremental code generation to overcome token limitations
-- Run code within a specified environment (Conda, virtualenv, or UV virtualenv)
-- Install dependencies when needed
-- Check if packages are already installed
-- Dynamically configure the environment at runtime
-- Configurable code storage directory
+- 执行 LLM 提示中的 Python 代码
+- 支持增量代码生成以克服 token 限制
+- 在指定环境中运行代码（Conda、virtualenv 或 UV virtualenv）
+- 按需安装依赖
+- 检查包是否已安装
+- 运行时动态配置环境
+- 可配置的代码存储目录
 
-## Prerequisites
+## 环境要求
 
-- Node.js installed
-- One of the following:
-  - Conda installed with desired Conda environment created
+- 已安装 Node.js
+- 以下任一环境：
+  - 已创建 Conda 环境的 Conda
   - Python virtualenv
   - UV virtualenv
 
-## Setup
+## 安装步骤
 
-1. Clone this repository:
+1. 克隆仓库：
 
 ```bash
-git clone https://github.com/bazinga012/mcp_code_executor.git
+git clone https://github.com/risingrookie17/mcp_code_executor.git
 ```
 
-2. Navigate to the project directory:
+2. 进入项目目录：
 
-```bash 
+```bash
 cd mcp_code_executor
 ```
 
-3. Install the Node.js dependencies:
+3. 安装 Node.js 依赖：
 
 ```bash
 npm install
 ```
 
-4. Build the project:
+4. 构建项目：
 
 ```bash
 npm run build
 ```
 
-## Configuration
+## 配置
 
-To configure the MCP Code Executor server, add the following to your MCP servers configuration file:
+在 MCP 服务器配置文件中添加以下配置：
 
-### Using Node.js
+### 使用 Node.js
 
 ```json
 {
@@ -61,7 +62,7 @@ To configure the MCP Code Executor server, add the following to your MCP servers
     "mcp-code-executor": {
       "command": "node",
       "args": [
-        "/path/to/mcp_code_executor/build/index.js" 
+        "/path/to/mcp_code_executor/build/index.js"
       ],
       "env": {
         "CODE_STORAGE_DIR": "/path/to/code/storage",
@@ -73,7 +74,7 @@ To configure the MCP Code Executor server, add the following to your MCP servers
 }
 ```
 
-### Using Docker
+### 使用 Docker
 
 ```json
 {
@@ -91,32 +92,33 @@ To configure the MCP Code Executor server, add the following to your MCP servers
 }
 ```
 
-> **Note:** The Dockerfile has been tested with the venv-uv environment type only. Other environment types may require additional configuration.
+> **注意：** Dockerfile 仅在 venv-uv 环境类型下测试过。其他环境类型可能需要额外配置。
 
-### Environment Variables
+### 环境变量
 
-#### Required Variables
-- `CODE_STORAGE_DIR`: Directory where the generated code will be stored
+#### 必需变量
+- `CODE_STORAGE_DIR`：生成代码的存储目录
 
-#### Environment Type (choose one setup)
-- **For Conda:**
-  - `ENV_TYPE`: Set to `conda`
-  - `CONDA_ENV_NAME`: Name of the Conda environment to use
+#### 环境类型（选择一种）
 
-- **For Standard Virtualenv:**
-  - `ENV_TYPE`: Set to `venv`
-  - `VENV_PATH`: Path to the virtualenv directory
+- **Conda 环境：**
+  - `ENV_TYPE`：设置为 `conda`
+  - `CONDA_ENV_NAME`：要使用的 Conda 环境名称
 
-- **For UV Virtualenv:**
-  - `ENV_TYPE`: Set to `venv-uv`
-  - `UV_VENV_PATH`: Path to the UV virtualenv directory
+- **标准 Virtualenv：**
+  - `ENV_TYPE`：设置为 `venv`
+  - `VENV_PATH`：virtualenv 目录路径
 
-## Available Tools
+- **UV Virtualenv：**
+  - `ENV_TYPE`：设置为 `venv-uv`
+  - `UV_VENV_PATH`：UV virtualenv 目录路径
 
-The MCP Code Executor provides the following tools to LLMs:
+## 可用工具
+
+MCP 代码执行器向 LLM 提供以下工具：
 
 ### 1. `execute_code`
-Executes Python code in the configured environment. Best for short code snippets.
+在配置的环境中执行 Python 代码。适用于短代码片段。
 ```json
 {
   "name": "execute_code",
@@ -128,7 +130,7 @@ Executes Python code in the configured environment. Best for short code snippets
 ```
 
 ### 2. `install_dependencies`
-Installs Python packages in the environment.
+在环境中安装 Python 包。
 ```json
 {
   "name": "install_dependencies",
@@ -139,7 +141,7 @@ Installs Python packages in the environment.
 ```
 
 ### 3. `check_installed_packages`
-Checks if packages are already installed in the environment.
+检查包是否已安装在环境中。
 ```json
 {
   "name": "check_installed_packages",
@@ -150,7 +152,7 @@ Checks if packages are already installed in the environment.
 ```
 
 ### 4. `configure_environment`
-Dynamically changes the environment configuration.
+动态更改环境配置。
 ```json
 {
   "name": "configure_environment",
@@ -162,7 +164,7 @@ Dynamically changes the environment configuration.
 ```
 
 ### 5. `get_environment_config`
-Gets the current environment configuration.
+获取当前环境配置。
 ```json
 {
   "name": "get_environment_config",
@@ -171,7 +173,7 @@ Gets the current environment configuration.
 ```
 
 ### 6. `initialize_code_file`
-Creates a new Python file with initial content. Use this as the first step for longer code that may exceed token limits.
+创建包含初始内容的新 Python 文件。对于可能超出 token 限制的较长代码，请使用此作为第一步。
 ```json
 {
   "name": "initialize_code_file",
@@ -183,7 +185,7 @@ Creates a new Python file with initial content. Use this as the first step for l
 ```
 
 ### 7. `append_to_code_file`
-Appends content to an existing Python code file. Use this to add more code to a file created with initialize_code_file.
+将内容追加到现有 Python 代码文件。使用此工具可向使用 initialize_code_file 创建的文件添加更多代码。
 ```json
 {
   "name": "append_to_code_file",
@@ -195,7 +197,7 @@ Appends content to an existing Python code file. Use this to add more code to a 
 ```
 
 ### 8. `execute_code_file`
-Executes an existing Python file. Use this as the final step after building up code with initialize_code_file and append_to_code_file.
+执行现有的 Python 文件。在使用 initialize_code_file 和 append_to_code_file 构建代码后，使用此作为最后一步。
 ```json
 {
   "name": "execute_code_file",
@@ -206,7 +208,7 @@ Executes an existing Python file. Use this as the final step after building up c
 ```
 
 ### 9. `read_code_file`
-Reads the content of an existing Python code file. Use this to verify the current state of a file before appending more content or executing it.
+读取现有 Python 代码文件的内容。在追加更多内容或执行文件之前，使用此工具验证文件的当前状态。
 ```json
 {
   "name": "read_code_file",
@@ -216,31 +218,31 @@ Reads the content of an existing Python code file. Use this to verify the curren
 }
 ```
 
-## Usage
+## 使用方法
 
-Once configured, the MCP Code Executor will allow LLMs to execute Python code by generating a file in the specified `CODE_STORAGE_DIR` and running it within the configured environment.
+配置完成后，MCP 代码执行器将允许 LLM 通过在指定的 `CODE_STORAGE_DIR` 中生成文件并在配置的环境中运行来执行 Python 代码。
 
-LLMs can generate and execute code by referencing this MCP server in their prompts.
+LLM 可以通过在提示中引用此 MCP 服务器来生成和执行代码。
 
-### Handling Large Code Blocks
+### 处理大型代码块
 
-For larger code blocks that might exceed LLM token limits, use the incremental code generation approach:
+对于可能超出 LLM token 限制的大型代码块，请使用增量代码生成方法：
 
-1. **Initialize a file** with the basic structure using `initialize_code_file`
-2. **Add more code** in subsequent calls using `append_to_code_file`
-3. **Verify the file content** if needed using `read_code_file`
-4. **Execute the complete code** using `execute_code_file`
+1. **初始化文件** - 使用 `initialize_code_file` 创建基本结构
+2. **添加更多代码** - 在后续调用中使用 `append_to_code_file`
+3. **验证文件内容** - 如需要使用 `read_code_file`
+4. **执行完整代码** - 使用 `execute_code_file`
 
-This approach allows LLMs to write complex, multi-part code without running into token limitations.
+这种方法允许 LLM 编写复杂的多部分代码，而不会遇到 token 限制问题。
 
-## Backward Compatibility
+## 向后兼容性
 
-This package maintains backward compatibility with earlier versions. Users of previous versions who only specified a Conda environment will continue to work without any changes to their configuration.
+此包与早期版本保持向后兼容性。仅指定 Conda 环境的老用户无需更改配置即可继续工作。
 
-## Contributing
+## 贡献
 
-Contributions are welcome! Please open an issue or submit a pull request.
+欢迎贡献！请提交 Issue 或 Pull Request。
 
-## License
+## 许可证
 
-This project is licensed under the MIT License.
+本项目基于 MIT 许可证授权。
